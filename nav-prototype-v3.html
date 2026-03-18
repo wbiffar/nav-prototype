@@ -468,7 +468,7 @@
 
     /* Accordion item */
     .accordion-item {
-      border: none;
+      border-bottom: 1px solid var(--border-default);
     }
     .accordion-trigger {
       display: flex;
@@ -485,6 +485,10 @@
       font-family: var(--font-sans);
       letter-spacing: -0.02em;
       text-align: left;
+      transition: color 0.2s ease;
+    }
+    .accordion-item.open .accordion-trigger {
+      color: var(--gold-600);
     }
     .accordion-trigger .caret {
       color: var(--warmblack-400);
@@ -500,10 +504,11 @@
       transition: max-height 0.35s ease;
     }
     .accordion-item.open .accordion-content {
-      max-height: 2000px;
+      max-height: 1200px;
+      transition: max-height 0.5s ease;
     }
     .accordion-inner {
-      padding: 0 0 16px 0;
+      padding: 8px 0 24px 0;
     }
 
     .mobile-auth-btns {
@@ -1120,10 +1125,33 @@
         trigger.addEventListener('click', () => {
           const item = trigger.closest('.accordion-item');
           const wasOpen = item.classList.contains('open');
-          // Close all
+          // Close all others
+          const hadOpen = !!mobileAccordion.querySelector('.accordion-item.open');
           mobileAccordion.querySelectorAll('.accordion-item.open').forEach(i => i.classList.remove('open'));
           // Toggle clicked
-          if (!wasOpen) item.classList.add('open');
+          if (!wasOpen) {
+            item.classList.add('open');
+            // Wait for collapse to settle, then scroll
+            if (hadOpen) {
+              let lastTop = trigger.getBoundingClientRect().top;
+              let stableCount = 0;
+              const poll = setInterval(() => {
+                const top = trigger.getBoundingClientRect().top;
+                if (Math.abs(top - lastTop) < 1) {
+                  stableCount++;
+                  if (stableCount >= 3) {
+                    clearInterval(poll);
+                    trigger.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                } else {
+                  stableCount = 0;
+                }
+                lastTop = top;
+              }, 50);
+              // Safety: stop polling after 2s
+              setTimeout(() => clearInterval(poll), 2000);
+            }
+          }
         });
       });
     }
