@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Legacy – Navigation Prototype</title>
+  <title>Legacy – Navigation Prototype v2 (Drop-down Mobile Menu)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
@@ -50,7 +50,7 @@
     .header-wrapper {
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 300;
       background: var(--surface-card);
       border-bottom: 1px solid var(--border-default);
       isolation: isolate;
@@ -131,6 +131,35 @@
       border: none;
       cursor: pointer;
       color: var(--text-primary);
+      position: relative;
+    }
+    .hamburger-btn .hamburger-icon,
+    .hamburger-btn .close-icon {
+      transition: opacity 0.2s ease;
+    }
+    .hamburger-btn .close-icon {
+      display: none;
+    }
+    .hamburger-btn.active .hamburger-icon {
+      display: none;
+    }
+    .hamburger-btn.active .close-icon {
+      display: block;
+    }
+    .hamburger-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 4px;
+      right: 4px;
+      height: 3px;
+      background: var(--gold-500);
+      border-radius: 2px 2px 0 0;
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .hamburger-btn.active::after {
+      transform: scaleX(1);
     }
 
     /* ── Nav Bar (Desktop) ── */
@@ -409,7 +438,10 @@
     .mobile-overlay {
       display: none;
       position: fixed;
-      inset: 0;
+      top: var(--mobile-header-height, 124px);
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0,0,0,0.5);
       z-index: 200;
       opacity: 0;
@@ -422,11 +454,11 @@
 
     .mobile-menu {
       position: fixed;
-      top: 0;
+      top: var(--mobile-header-height, 124px);
       right: 0;
       width: 90%;
       max-width: 375px;
-      height: 100%;
+      height: calc(100% - var(--mobile-header-height, 124px));
       background: var(--white);
       z-index: 201;
       transform: translateX(100%);
@@ -437,26 +469,7 @@
     }
     .mobile-menu.open { transform: translateX(0); }
 
-    .mobile-menu-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border-bottom: 1px solid var(--border-default);
-      flex-shrink: 0;
-    }
-    .mobile-menu-close {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-primary);
-      font-size: 24px;
-    }
+    /* Menu header removed in v2 — header stays visible */
 
     /* Sliding panels container */
     .mobile-panels {
@@ -709,7 +722,8 @@
           <span>Sign In</span>
         </button>
         <button class="hamburger-btn" type="button" id="hamburgerBtn" aria-label="Open menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
     </div>
@@ -867,10 +881,7 @@
   <!-- ════════════════════════════════════ MOBILE MENU ════════════════════════════════════ -->
   <div class="mobile-overlay" id="mobileOverlay"></div>
   <div class="mobile-menu" id="mobileMenu">
-    <div class="mobile-menu-header">
-      <a href="#" class="logo-link"><img src="https://www.legacy.com/media/legacy-icon.svg" alt="Legacy.com" style="height:28px" /></a>
-      <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&times;</button>
-    </div>
+    <!-- Header stays visible above; no menu header needed -->
     <div class="mobile-panels" id="mobilePanels">
 
       <!-- Main Panel -->
@@ -1128,22 +1139,29 @@
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const mobileOverlay = document.getElementById('mobileOverlay');
-    const mobileMenuClose = document.getElementById('mobileMenuClose');
     const mobilePanels = document.getElementById('mobilePanels');
     const mobileSubPanel = document.getElementById('mobileSubPanel');
     const mobileSubTitle = document.getElementById('mobileSubTitle');
     const mobileSubContent = document.getElementById('mobileSubContent');
     const mobileSubBack = document.getElementById('mobileSubBack');
 
+    function setMobileHeaderHeight() {
+      const header = document.getElementById('headerWrapper');
+      document.documentElement.style.setProperty('--mobile-header-height', header.offsetHeight + 'px');
+    }
+
     function openMobileMenu() {
+      setMobileHeaderHeight();
       mobileMenu.classList.add('open');
       mobileOverlay.classList.add('visible');
+      hamburgerBtn.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
     function closeMobileMenu() {
       mobileMenu.classList.remove('open');
       mobileOverlay.classList.remove('visible');
+      hamburgerBtn.classList.remove('active');
       document.body.style.overflow = '';
       // Reset to main panel after transition
       setTimeout(() => {
@@ -1188,8 +1206,13 @@
       mobilePanels.classList.remove('show-sub');
     }
 
-    hamburgerBtn.addEventListener('click', openMobileMenu);
-    mobileMenuClose.addEventListener('click', closeMobileMenu);
+    hamburgerBtn.addEventListener('click', () => {
+      if (mobileMenu.classList.contains('open')) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    });
     mobileOverlay.addEventListener('click', closeMobileMenu);
     mobileSubBack.addEventListener('click', hideSubPanel);
 
