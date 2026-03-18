@@ -145,6 +145,11 @@
     }
 
     /* ── Nav Bar (Desktop) ── */
+    .nav-bar-wrapper {
+      background: var(--warmblack-50);
+      position: relative;
+      z-index: 2;
+    }
     .nav-bar {
       display: flex;
       align-items: center;
@@ -152,9 +157,6 @@
       padding: 0 64px;
       max-width: 1440px;
       margin: 0 auto;
-      position: relative;
-      z-index: 2;
-      background: var(--warmblack-50);
     }
     .nav-item {
       position: relative;
@@ -405,7 +407,7 @@
         left: 30px;
       }
       .hamburger-btn { display: flex; }
-      .nav-bar { display: none; }
+      .nav-bar-wrapper { display: none; }
       .mega-nav-wrapper { display: none; }
       /* Sign In label visible on mobile */
     }
@@ -734,13 +736,15 @@
     </div>
 
     <!-- Nav Bar (Desktop/Tablet) -->
-    <nav class="nav-bar" id="navBar" aria-label="Main navigation">
-      <button class="nav-item" type="button" data-panel="create" aria-expanded="false">Create &amp; Publish</button>
-      <button class="nav-item" type="button" data-panel="browse" aria-expanded="false">Browse Obituaries</button>
-      <button class="nav-item" type="button" data-panel="planning" aria-expanded="false">Planning Ahead</button>
-      <button class="nav-item" type="button" data-panel="support" aria-expanded="false">Get Support</button>
-      <a class="nav-item" href="#">Send Gifts</a>
-    </nav>
+    <div class="nav-bar-wrapper">
+      <nav class="nav-bar" id="navBar" aria-label="Main navigation">
+        <button class="nav-item" type="button" data-panel="create" aria-expanded="false">Create &amp; Publish</button>
+        <button class="nav-item" type="button" data-panel="browse" aria-expanded="false">Browse Obituaries</button>
+        <button class="nav-item" type="button" data-panel="planning" aria-expanded="false">Planning Ahead</button>
+        <button class="nav-item" type="button" data-panel="support" aria-expanded="false">Get Support</button>
+        <a class="nav-item" href="#">Send Gifts</a>
+      </nav>
+    </div>
 
     <!-- Mega Nav Panels -->
     <div class="mega-nav-wrapper" id="megaNavWrapper">
