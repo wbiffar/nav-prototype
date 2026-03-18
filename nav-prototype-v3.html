@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legacy – Navigation Prototype v3 (Accordion Mobile Menu)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design Tokens ── */
+    :root {
+      --navy-700: #293548;
+      --navy-800: #212a3a;
+      --navy-900: #151b24;
+      --gold-50: #fbf7ef;
+      --gold-100: #f6e5b8;
+      --gold-400: #e2ba60;
+      --gold-500: #dcb05e;
+      --gold-600: #c49e54;
+      --gold-900: #655b34;
+      --warmblack-100: #f6f6f6;
+      --warmblack-200: #ebe9e9;
+      --warmblack-300: #dbdad7;
+      --warmblack-400: #afadaa;
+      --warmblack-500: #807e7a;
+      --warmblack-700: #514d45;
+      --warmblack-900: #262116;
+      --white: #ffffff;
+      --surface-page: var(--gold-50);
+      --surface-card: var(--white);
+      --text-primary: var(--warmblack-900);
+      --text-secondary: var(--warmblack-700);
+      --border-default: var(--warmblack-300);
+      --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--surface-page);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Header Wrapper ── */
+    .header-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-default);
+      isolation: isolate;
+    }
+
+    /* ── Top Bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 64px;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+    .logo-link {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .logo-link img { height: 32px; }
+    .search-bar {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--border-default);
+      border-radius: 9999px;
+      padding: 0 16px 0 40px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--white);
+      outline: none;
+    }
+    .search-bar input::placeholder { color: var(--warmblack-400); }
+    .search-bar input:focus { border-color: var(--navy-700); }
+    .search-bar .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--warmblack-400);
+      pointer-events: none;
+    }
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .sign-in-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      white-space: nowrap;
+    }
+    .hamburger-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    /* ── Nav Bar (Desktop) ── */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0 64px;
+      max-width: 1440px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      background: var(--surface-card);
+    }
+    .nav-item {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      white-space: nowrap;
+      text-decoration: none;
+      line-height: 24px;
+      transition: color 0.15s ease;
+    }
+    .nav-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: var(--gold-500);
+      border-radius: 2px 2px 0 0;
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .nav-item:hover { color: var(--navy-700); }
+    .nav-item:hover::after,
+    .nav-item.active::after { transform: scaleX(1); }
+
+    /* ── Mega Nav Panel ── */
+    .mega-nav-wrapper {
+      position: absolute;
+      top: calc(100% + 1px);
+      left: 0;
+      width: 100%;
+      z-index: 1;
+      clip-path: inset(0 -50px -50px -50px);
+    }
+    .mega-nav-panel {
+      background: var(--white);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      padding: 40px 64px;
+      opacity: 0;
+      transform: translateY(-12px);
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
+      pointer-events: none;
+      visibility: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+    .mega-nav-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+      position: relative;
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0s;
+    }
+    .mega-nav-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.15);
+      z-index: 90;
+      pointer-events: none;
+    }
+    .mega-nav-overlay.visible { display: block; }
+
+    .mega-nav-panel-inner {
+      display: flex;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* ── Mega Nav List Column ── */
+    .mega-list {
+      flex: 1 1 0%;
+      min-width: 0;
+      border-left: 1px solid var(--border-default);
+      padding: 8px 16px;
+    }
+    .mega-list-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+    .mega-list ul { list-style: none; }
+    .mega-list li {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      transform: translateX(0);
+      transition: transform 0.2s ease;
+    }
+    .mega-list li:last-child { margin-bottom: 0; }
+    .mega-list li:hover {
+      transform: translateX(4px);
+    }
+    .mega-list li::after {
+      content: '→';
+      margin-left: 8px;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      color: var(--navy-700);
+      font-size: 18px;
+    }
+    .mega-list li:hover::after {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .mega-list a {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .mega-list a:hover { color: var(--navy-700); text-decoration: none; }
+    .mega-list .sub-desc {
+      display: block;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ── Featured Card (shared styles for desktop + mobile) ── */
+    .featured-card,
+    .mobile-featured-card {
+      border-radius: 16px;
+      border: 2px solid var(--border-default);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px 20px;
+    }
+    .featured-card::before,
+    .mobile-featured-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, #262116, transparent);
+      z-index: 1;
+      border-radius: 0 0 14px 14px;
+    }
+    .featured-card-bg {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      z-index: 0;
+    }
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--warmblack-100);
+      padding: 2px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text-primary);
+      z-index: 2;
+    }
+    .card-cta {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .card-cta:hover { color: var(--warmblack-100); }
+    .card-cta .arrow {
+      display: inline-block;
+      transition: transform 0.15s;
+    }
+    .card-cta:hover .arrow { transform: translateX(2px); }
+
+    /* Desktop-specific featured card sizing */
+    .featured-card {
+      flex: 0 0 25%;
+      min-height: 208px;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .featured-cards-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* ── Per-panel featured sizing ── */
+    /* Planning: stack the two cards vertically */
+    .mega-nav-panel[data-panel="planning"] .featured-cards-row {
+      flex: 0 0 25%;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mega-nav-panel[data-panel="planning"] .featured-cards-row .featured-card {
+      height: auto;
+      flex: 1;
+    }
+
+    /* ── Mobile (≤768px) ── */
+    @media (max-width: 768px) {
+      .top-bar {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+      }
+      .search-bar {
+        order: 3;
+        flex: none;
+        width: 100%;
+        max-width: none;
+      }
+      .hamburger-btn { display: flex; }
+      .nav-bar { display: none; }
+      .mega-nav-wrapper { display: none; }
+      .sign-in-btn span { display: none; }
+    }
+    /* ── Tablet (769–1023px): nav bar visible, mega nav hidden, nav items trigger slide-out ── */
+    @media (min-width: 769px) and (max-width: 1023px) {
+      .top-bar { padding: 12px 24px; }
+      .nav-bar { padding: 0 24px; }
+      .nav-item { padding: 12px 16px; font-size: 15px; }
+      .mega-nav-wrapper { display: none; }
+    }
+    /* ── Desktop (≥1024px): mega nav panels ── */
+    @media (min-width: 1024px) and (max-width: 1279px) {
+      .top-bar { padding: 12px 24px; }
+      .nav-bar { padding: 0 24px; }
+      .mega-nav-panel { padding: 40px 24px; }
+    }
+
+    /* ── Mobile Menu ── */
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-overlay.visible {
+      display: block;
+      opacity: 1;
+    }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 90%;
+      max-width: 375px;
+      height: 100%;
+      background: var(--white);
+      z-index: 201;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .mobile-menu.open { transform: translateX(0); }
+
+    .mobile-menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+    .mobile-menu-close {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-primary);
+      font-size: 24px;
+    }
+
+    /* Accordion menu container */
+    .mobile-accordion {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+    }
+
+    /* Accordion item */
+    .accordion-item {
+      border: none;
+    }
+    .accordion-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      border: none;
+      background: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      letter-spacing: -0.02em;
+      text-align: left;
+    }
+    .accordion-trigger .caret {
+      color: var(--warmblack-400);
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+    .accordion-item.open .accordion-trigger .caret {
+      transform: rotate(90deg);
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .accordion-item.open .accordion-content {
+      max-height: 2000px;
+    }
+    .accordion-inner {
+      padding: 0 0 16px 0;
+    }
+
+    .mobile-auth-btns {
+      display: flex;
+      gap: 12px;
+      padding: 24px 16px 16px;
+      position: relative;
+    }
+    .mobile-auth-btns::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 16px;
+      right: 16px;
+      height: 1px;
+      background: var(--border-default);
+    }
+    .mobile-auth-btn {
+      flex: 1;
+      height: 40px;
+      border-radius: 9999px;
+      border: 1px solid var(--warmblack-300);
+      background: var(--white);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .mobile-auth-btn:hover { background: var(--warmblack-100); }
+
+    .mobile-menu-footer {
+      padding: 16px;
+      margin-top: auto;
+      flex-shrink: 0;
+      border-top: 1px solid var(--border-default);
+    }
+    .mobile-send-gifts {
+      width: 100%;
+      height: 48px;
+      border-radius: 9999px;
+      border: none;
+      background: var(--gold-500);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+    .mobile-send-gifts:hover { background: var(--gold-600); }
+
+    /* Accordion sub-content */
+    .mobile-sub-section {
+      padding-top: 0;
+    }
+    .mobile-sub-section + .mobile-sub-section {
+      padding-top: 32px;
+    }
+    .mobile-sub-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+    .mobile-sub-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .mobile-sub-list li {
+      margin-bottom: 24px;
+    }
+    .mobile-sub-list li:last-child { margin-bottom: 0; }
+    .mobile-sub-list a {
+      font-size: 16px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .mobile-sub-list a:hover { text-decoration: underline; }
+    .mobile-sub-list .sub-desc {
+      display: block;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Mobile-specific featured card sizing */
+    .mobile-featured-card {
+      margin: 24px 16px 16px;
+      height: 200px;
+    }
+
+    /* ── Wireframe Page Content ── */
+    .page-content { padding: 0; }
+    .wireframe-block {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--warmblack-400);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .wireframe-hero {
+      height: 400px;
+      background: var(--warmblack-200);
+      border-bottom: 1px solid var(--border-default);
+    }
+    .wireframe-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .wireframe-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .wireframe-card {
+      height: 240px;
+      background: var(--white);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+    }
+    .wireframe-footer {
+      height: 200px;
+      background: var(--navy-800);
+      color: var(--warmblack-400);
+    }
+
+    @media (max-width: 640px) {
+      .wireframe-hero { height: 260px; }
+      .wireframe-content { padding: 24px 16px; }
+      .wireframe-row { grid-template-columns: 1fr; }
+      .wireframe-card { height: 160px; }
+    }
+
+    /* Placeholder gradients for featured cards */
+    .bg-grad-1 { background: linear-gradient(135deg, #8B7355 0%, #5C4A32 60%, #3E3220 100%); }
+    .bg-grad-2 { background: linear-gradient(135deg, #A0845C 0%, #6B5A3E 50%, #4A3C28 100%); }
+    .bg-grad-3 { background: linear-gradient(135deg, #7A6B52 0%, #554A38 60%, #3A3228 100%); }
+    .bg-grad-4 { background: linear-gradient(135deg, #6E5D42 0%, #4A3F2E 60%, #332B1E 100%); }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════ HEADER ════════════════════════════════════════ -->
+  <header class="header-wrapper" id="headerWrapper">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <a href="#" class="logo-link">
+        <img src="https://www.legacy.com/media/legacy-icon.svg" alt="Legacy.com" />
+      </a>
+      <div class="search-bar">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Find a loved one&hellip;" />
+      </div>
+      <div class="top-bar-actions">
+        <button class="sign-in-btn" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Sign In</span>
+        </button>
+        <button class="hamburger-btn" type="button" id="hamburgerBtn" aria-label="Open menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Nav Bar (Desktop/Tablet) -->
+    <nav class="nav-bar" id="navBar">
+      <button class="nav-item" type="button" data-panel="create">Create &amp; Publish</button>
+      <button class="nav-item" type="button" data-panel="browse">Browse Obituaries</button>
+      <button class="nav-item" type="button" data-panel="planning">Planning Ahead</button>
+      <button class="nav-item" type="button" data-panel="support">Get Support</button>
+      <a class="nav-item" href="#">Send Gifts</a>
+    </nav>
+
+    <!-- Mega Nav Panels -->
+    <div class="mega-nav-wrapper" id="megaNavWrapper">
+
+      <!-- Create & Publish -->
+      <div class="mega-nav-panel" data-panel="create">
+        <div class="mega-nav-panel-inner">
+        <div class="mega-list">
+          <h3 class="mega-list-title">Ready to Publish an Obituary?</h3>
+          <ul>
+            <li><a href="#">Publish in a Newspaper</a></li>
+            <li><a href="#">Publish Online</a></li>
+          </ul>
+        </div>
+        <div class="mega-list">
+          <h3 class="mega-list-title">Need to Write an Obituary?</h3>
+          <ul>
+            <li><a href="#">Guided Writing Tool</a></li>
+            <li><a href="#">Obituary Templates</a></li>
+            <li><a href="#">Obituary Examples</a></li>
+            <li><a href="#">How to Write an Obituary</a></li>
+          </ul>
+        </div>
+        <div class="mega-list">
+          <h3 class="mega-list-title">More Ways to Memorialize</h3>
+          <ul>
+            <li><a href="#">Create a Memory Book</a></li>
+            <li><a href="#">Create a Tribute Video</a></li>
+          </ul>
+        </div>
+        <div class="featured-card">
+          <div class="featured-card-bg bg-grad-1"></div>
+          <a href="#" class="card-cta">Publish in 2,000+ Newspapers <span class="arrow">&rarr;</span></a>
+        </div>
+        </div><!-- /mega-nav-panel-inner -->
+      </div>
+
+      <!-- Browse Obituaries -->
+      <div class="mega-nav-panel" data-panel="browse">
+        <div class="mega-nav-panel-inner">
+        <div class="mega-list">
+          <h3 class="mega-list-title">Browse Obituaries By</h3>
+          <ul>
+            <li><a href="#">Celebrities and Notable Deaths</a></li>
+            <li><a href="#">Charities and Social Causes</a></li>
+            <li><a href="#">City and States</a></li>
+            <li><a href="#">Countries</a></li>
+            <li><a href="#">Colleges and Universities</a></li>
+            <li><a href="#">First Responders</a></li>
+            <li><a href="#">Funeral Homes</a></li>
+          </ul>
+        </div>
+        <div class="mega-list">
+          <ul>
+            <li><a href="#">High Schools</a></li>
+            <li><a href="#">Last Names</a></li>
+            <li><a href="#">Military Branches</a></li>
+            <li><a href="#">Newspapers</a></li>
+            <li><a href="#">Occupations</a></li>
+            <li><a href="#">Sororities and Fraternities</a></li>
+            <li><a href="#">World and Local Wars</a></li>
+            <li><a href="#">World and Local Events</a></li>
+            <li><a href="#">Browse All Categories</a></li>
+          </ul>
+        </div>
+        <div class="featured-card">
+          <div class="featured-card-bg bg-grad-2"></div>
+          <span class="card-badge">Featured</span>
+          <a href="#" class="card-cta">Colorectal Cancer Memorial <span class="arrow">&rarr;</span></a>
+        </div>
+        </div><!-- /mega-nav-panel-inner -->
+      </div>
+
+      <!-- Planning Ahead -->
+      <div class="mega-nav-panel" data-panel="planning">
+        <div class="mega-nav-panel-inner">
+        <div class="mega-list">
+          <h3 class="mega-list-title">When Someone Has Died</h3>
+          <ul>
+            <li><a href="#">What To Do First</a></li>
+            <li><a href="#">Find a Funeral Home or Cremation Service</a></li>
+            <li><a href="#">Plan &amp; Price a Service</a></li>
+            <li><a href="#">Estate Settlement Guide</a></li>
+          </ul>
+        </div>
+        <div class="mega-list">
+          <h3 class="mega-list-title">Plan Ahead</h3>
+          <ul>
+            <li><a href="#">Estate Planning Guide</a></li>
+            <li><a href="#">Pre-plan a Funeral</a></li>
+            <li><a href="#">Create a Will or Trust</a></li>
+          </ul>
+        </div>
+        <div class="featured-cards-row">
+          <div class="featured-card">
+            <div class="featured-card-bg bg-grad-3"></div>
+            <a href="#" class="card-cta">Plan Your Future <span class="arrow">&rarr;</span></a>
+          </div>
+          <div class="featured-card">
+            <div class="featured-card-bg bg-grad-4"></div>
+            <a href="#" class="card-cta">Estate Planning <span class="arrow">&rarr;</span></a>
+          </div>
+        </div>
+        </div><!-- /mega-nav-panel-inner -->
+      </div>
+
+      <!-- Get Support -->
+      <div class="mega-nav-panel" data-panel="support">
+        <div class="mega-nav-panel-inner">
+        <div class="mega-list">
+          <h3 class="mega-list-title">Grief Support</h3>
+          <ul>
+            <li><a href="#">Help with Grief &amp; Loss</a></li>
+            <li><a href="#">How to Cope with Grief</a></li>
+            <li><a href="#">Support Groups &amp; Memorials</a></li>
+          </ul>
+        </div>
+        <div class="mega-list">
+          <h3 class="mega-list-title">Sympathy &amp; Honoring</h3>
+          <ul>
+            <li><a href="#">Poems of Mourning</a></li>
+            <li><a href="#">Honoring a Life</a></li>
+            <li><a href="#">Offering Sympathy</a></li>
+          </ul>
+        </div>
+        <div class="mega-list">
+          <h3 class="mega-list-title">Customer Support</h3>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Chat With Us</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        </div><!-- /mega-nav-panel-inner -->
+      </div>
+
+    </div><!-- /mega-nav-wrapper -->
+  </header>
+
+  <!-- Mega Nav Overlay (desktop) -->
+  <div class="mega-nav-overlay" id="megaNavOverlay"></div>
+
+  <!-- ════════════════════════════════════ MOBILE MENU ════════════════════════════════════ -->
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+      <a href="#" class="logo-link"><img src="https://www.legacy.com/media/legacy-icon.svg" alt="Legacy.com" style="height:28px" /></a>
+      <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&times;</button>
+    </div>
+    <div class="mobile-accordion" id="mobileAccordion">
+      <!-- Accordion items populated by JS -->
+    </div>
+    <div class="mobile-menu-footer">
+      <button class="mobile-send-gifts">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        Send Gifts
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ PAGE WIREFRAME ════════════════════════════════ -->
+  <main class="page-content">
+    <div class="wireframe-block wireframe-hero">Hero Section</div>
+    <div class="wireframe-content">
+      <div class="wireframe-row">
+        <div class="wireframe-block wireframe-card">Card</div>
+        <div class="wireframe-block wireframe-card">Card</div>
+        <div class="wireframe-block wireframe-card">Card</div>
+      </div>
+      <div class="wireframe-row">
+        <div class="wireframe-block wireframe-card">Card</div>
+        <div class="wireframe-block wireframe-card">Card</div>
+        <div class="wireframe-block wireframe-card">Card</div>
+      </div>
+    </div>
+    <div class="wireframe-block wireframe-footer">Footer</div>
+  </main>
+
+  <!-- ════════════════════════════════════ SCRIPTS ════════════════════════════════════ -->
+  <script>
+    // ── Sub-panel content data ──
+    const subPanelData = {
+      create: {
+        title: 'Create & Publish',
+        sections: [
+          {
+            title: 'Ready to Publish an Obituary?',
+            items: [
+              { text: 'Publish in a Newspaper' },
+              { text: 'Publish Online' }
+            ]
+          },
+          {
+            title: 'Need to Write an Obituary?',
+            items: [
+              { text: 'Write with Guidance', desc: "We'll help you write an obituary, step by step" },
+              { text: 'Obituary Templates' },
+              { text: 'Obituary Examples' },
+              { text: 'How to Write an Obituary' }
+            ]
+          },
+          {
+            title: 'More Ways to Memorialize',
+            items: [
+              { text: 'Create a Memory Book' },
+              { text: 'Create a Tribute Video' }
+            ]
+          }
+        ],
+        featured: { cta: 'Publish in 2,000+ Newspapers', bg: 'bg-grad-1' }
+      },
+      browse: {
+        title: 'Browse Obituaries',
+        sections: [
+          {
+            title: 'Browse Obituaries By',
+            items: [
+              { text: 'Celebrities and Notable Deaths' },
+              { text: 'Charities and Social Causes' },
+              { text: 'City and States' },
+              { text: 'Countries' },
+              { text: 'Colleges and Universities' },
+              { text: 'First Responders' },
+              { text: 'Funeral Homes' },
+              { text: 'High Schools' },
+              { text: 'Last Names' },
+              { text: 'Military Branches' },
+              { text: 'Newspapers' },
+              { text: 'Occupations' },
+              { text: 'Sororities and Fraternities' },
+              { text: 'World and Local Wars' },
+              { text: 'World and Local Events' },
+              { text: 'Browse All Categories' }
+            ]
+          }
+        ],
+        featured: { cta: 'Colorectal Cancer Memorial', bg: 'bg-grad-2', badge: 'Featured' }
+      },
+      planning: {
+        title: 'Planning Ahead',
+        sections: [
+          {
+            title: 'When Someone Has Died',
+            items: [
+              { text: 'What To Do First' },
+              { text: 'Find a Funeral Home or Cremation Service' },
+              { text: 'Plan & Price a Service' },
+              { text: 'Estate Settlement Guide' }
+            ]
+          },
+          {
+            title: 'Plan Ahead',
+            items: [
+              { text: 'Estate Planning Guide' },
+              { text: 'Pre-plan a Funeral' },
+              { text: 'Create a Will or Trust' }
+            ]
+          }
+        ],
+        featured: { cta: 'Plan Your Future', bg: 'bg-grad-3' }
+      },
+      support: {
+        title: 'Get Support',
+        sections: [
+          {
+            title: 'Grief Support',
+            items: [
+              { text: 'Help with Grief & Loss' },
+              { text: 'How to Cope with Grief' },
+              { text: 'Support Groups & Memorials' }
+            ]
+          },
+          {
+            title: 'Sympathy & Honoring',
+            items: [
+              { text: 'Poems of Mourning' },
+              { text: 'Honoring a Life' },
+              { text: 'Offering Sympathy' }
+            ]
+          },
+          {
+            title: 'Customer Support',
+            items: [
+              { text: 'FAQ' },
+              { text: 'Chat With Us' },
+              { text: 'Contact Us' }
+            ]
+          }
+        ],
+        featured: null
+      }
+    };
+
+    // ── Desktop Mega Nav ──
+    const navItems = document.querySelectorAll('.nav-item');
+    const megaPanels = document.querySelectorAll('.mega-nav-panel');
+    const megaOverlay = document.getElementById('megaNavOverlay');
+    let activePanel = null;
+
+    function openMegaPanel(panelId) {
+      if (activePanel === panelId) return;
+      // Close current
+      megaPanels.forEach(p => p.classList.remove('visible'));
+      navItems.forEach(n => n.classList.remove('active'));
+      // Open new
+      const panel = document.querySelector(`.mega-nav-panel[data-panel="${panelId}"]`);
+      const navItem = document.querySelector(`.nav-item[data-panel="${panelId}"]`);
+      if (panel && navItem) {
+        panel.classList.add('visible');
+        navItem.classList.add('active');
+        megaOverlay.classList.add('visible');
+        activePanel = panelId;
+      }
+    }
+
+    function closeMegaNav() {
+      megaPanels.forEach(p => p.classList.remove('visible'));
+      navItems.forEach(n => n.classList.remove('active'));
+      megaOverlay.classList.remove('visible');
+      activePanel = null;
+    }
+
+    function isTablet() {
+      return window.innerWidth >= 769 && window.innerWidth <= 1023;
+    }
+
+    navItems.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const panelId = btn.dataset.panel;
+        if (isTablet()) {
+          // On tablet, open the mobile slide-out panel
+          openMobileMenu();
+          setTimeout(() => showSubPanel(panelId), 50);
+        } else {
+          if (activePanel === panelId) {
+            closeMegaNav();
+          } else {
+            openMegaPanel(panelId);
+          }
+        }
+      });
+      btn.addEventListener('mouseenter', () => {
+        if (!isTablet() && activePanel && activePanel !== btn.dataset.panel) {
+          openMegaPanel(btn.dataset.panel);
+        }
+      });
+    });
+
+    // Close when clicking outside header
+    document.addEventListener('click', (e) => {
+      if (activePanel && !e.target.closest('.header-wrapper') && !e.target.closest('.mega-nav-wrapper')) {
+        closeMegaNav();
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMegaNav();
+        closeMobileMenu();
+      }
+    });
+
+    // ── Mobile Menu (Accordion) ──
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const mobileMenuClose = document.getElementById('mobileMenuClose');
+    const mobileAccordion = document.getElementById('mobileAccordion');
+
+    // Build accordion HTML from subPanelData
+    function buildAccordion() {
+      let html = '';
+      const keys = ['create', 'browse', 'planning', 'support'];
+      keys.forEach(key => {
+        const data = subPanelData[key];
+        html += `<div class="accordion-item" data-key="${key}">`;
+        html += `<button class="accordion-trigger" type="button">
+          ${data.title}
+          <svg class="caret" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>`;
+        html += '<div class="accordion-content"><div class="accordion-inner">';
+
+        data.sections.forEach(section => {
+          html += '<div class="mobile-sub-section">';
+          if (section.title) {
+            html += `<h3 class="mobile-sub-section-title">${section.title}</h3>`;
+          }
+          html += '<ul class="mobile-sub-list">';
+          section.items.forEach(item => {
+            html += `<li><a href="#">${item.text}</a>`;
+            if (item.desc) html += `<span class="sub-desc">${item.desc}</span>`;
+            html += '</li>';
+          });
+          html += '</ul></div>';
+        });
+
+        if (data.featured) {
+          html += `<div class="mobile-featured-card">
+            <div class="featured-card-bg ${data.featured.bg}"></div>
+            ${data.featured.badge ? `<span class="card-badge">${data.featured.badge}</span>` : ''}
+            <a href="#" class="card-cta">${data.featured.cta} <span class="arrow">&rarr;</span></a>
+          </div>`;
+        }
+
+        html += '</div></div></div>';
+      });
+
+      // Auth buttons
+      html += `<div class="mobile-auth-btns">
+        <button class="mobile-auth-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Sign In
+        </button>
+        <button class="mobile-auth-btn">Create Account</button>
+      </div>`;
+
+      mobileAccordion.innerHTML = html;
+
+      // Add toggle listeners
+      mobileAccordion.querySelectorAll('.accordion-trigger').forEach(trigger => {
+        trigger.addEventListener('click', () => {
+          const item = trigger.closest('.accordion-item');
+          const wasOpen = item.classList.contains('open');
+          // Close all
+          mobileAccordion.querySelectorAll('.accordion-item.open').forEach(i => i.classList.remove('open'));
+          // Toggle clicked
+          if (!wasOpen) item.classList.add('open');
+        });
+      });
+    }
+
+    buildAccordion();
+
+    function openMobileMenu() {
+      mobileMenu.classList.add('open');
+      mobileOverlay.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      mobileOverlay.classList.remove('visible');
+      document.body.style.overflow = '';
+      // Collapse all accordions after transition
+      setTimeout(() => {
+        mobileAccordion.querySelectorAll('.accordion-item.open').forEach(i => i.classList.remove('open'));
+      }, 300);
+    }
+
+    hamburgerBtn.addEventListener('click', openMobileMenu);
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
+    mobileOverlay.addEventListener('click', closeMobileMenu);
+  </script>
+</body>
+</html>
