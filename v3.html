@@ -10,6 +10,8 @@
   <style>
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    :focus-visible { outline: 2px solid var(--navy-700); outline-offset: 2px; }
 
     /* ── Design Tokens ── */
     :root {
@@ -91,16 +93,15 @@
       font-size: 14px;
       color: var(--text-primary);
       background: var(--white);
-      outline: none;
     }
-    .search-bar input::placeholder { color: var(--warmblack-400); }
-    .search-bar input:focus { border-color: var(--navy-700); }
+    .search-bar input::placeholder { color: var(--warmblack-500); }
+    .search-bar input:focus-visible { border-color: var(--navy-700); outline: 2px solid var(--navy-700); outline-offset: 0; }
     .search-bar .search-icon {
       position: absolute;
       left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--warmblack-400);
+      color: var(--warmblack-500);
       pointer-events: none;
     }
     .top-bar-actions {
@@ -121,13 +122,15 @@
       cursor: pointer;
       font-family: var(--font-sans);
       white-space: nowrap;
+      min-height: 44px;
+      min-width: 44px;
     }
     .hamburger-btn {
       display: none;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       background: none;
       border: none;
       cursor: pointer;
@@ -431,12 +434,13 @@
       background: var(--white);
       z-index: 201;
       transform: translateX(100%);
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, visibility 0s 0.3s;
+      visibility: hidden;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-    .mobile-menu.open { transform: translateX(0); }
+    .mobile-menu.open { transform: translateX(0); visibility: visible; transition: transform 0.3s ease, visibility 0s 0s; }
 
     .mobile-menu-header {
       display: flex;
@@ -447,8 +451,8 @@
       flex-shrink: 0;
     }
     .mobile-menu-close {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -530,7 +534,7 @@
     }
     .mobile-auth-btn {
       flex: 1;
-      height: 40px;
+      height: 44px;
       border-radius: 9999px;
       border: 1px solid var(--warmblack-300);
       background: var(--white);
@@ -680,26 +684,26 @@
         <img src="https://www.legacy.com/media/legacy-icon.svg" alt="Legacy.com" />
       </a>
       <div class="search-bar">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Find a loved one&hellip;" />
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Find a loved one&hellip;" aria-label="Search for a loved one" />
       </div>
       <div class="top-bar-actions">
         <button class="sign-in-btn" type="button">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span>Sign In</span>
         </button>
-        <button class="hamburger-btn" type="button" id="hamburgerBtn" aria-label="Open menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <button class="hamburger-btn" type="button" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
     </div>
 
     <!-- Nav Bar (Desktop/Tablet) -->
-    <nav class="nav-bar" id="navBar">
-      <button class="nav-item" type="button" data-panel="create">Create &amp; Publish</button>
-      <button class="nav-item" type="button" data-panel="browse">Browse Obituaries</button>
-      <button class="nav-item" type="button" data-panel="planning">Planning Ahead</button>
-      <button class="nav-item" type="button" data-panel="support">Get Support</button>
+    <nav class="nav-bar" id="navBar" aria-label="Main navigation">
+      <button class="nav-item" type="button" data-panel="create" aria-expanded="false">Create &amp; Publish</button>
+      <button class="nav-item" type="button" data-panel="browse" aria-expanded="false">Browse Obituaries</button>
+      <button class="nav-item" type="button" data-panel="planning" aria-expanded="false">Planning Ahead</button>
+      <button class="nav-item" type="button" data-panel="support" aria-expanded="false">Get Support</button>
       <a class="nav-item" href="#">Send Gifts</a>
     </nav>
 
@@ -710,14 +714,14 @@
       <div class="mega-nav-panel" data-panel="create">
         <div class="mega-nav-panel-inner">
         <div class="mega-list">
-          <h3 class="mega-list-title">Ready to Publish an Obituary?</h3>
+          <p class="mega-list-title">Ready to Publish an Obituary?</p>
           <ul>
             <li><a href="#">Publish in a Newspaper</a></li>
             <li><a href="#">Publish Online</a></li>
           </ul>
         </div>
         <div class="mega-list">
-          <h3 class="mega-list-title">Need to Write an Obituary?</h3>
+          <p class="mega-list-title">Need to Write an Obituary?</p>
           <ul>
             <li><a href="#">Guided Writing Tool</a></li>
             <li><a href="#">Obituary Templates</a></li>
@@ -726,7 +730,7 @@
           </ul>
         </div>
         <div class="mega-list">
-          <h3 class="mega-list-title">More Ways to Memorialize</h3>
+          <p class="mega-list-title">More Ways to Memorialize</p>
           <ul>
             <li><a href="#">Create a Memory Book</a></li>
             <li><a href="#">Create a Tribute Video</a></li>
@@ -743,7 +747,7 @@
       <div class="mega-nav-panel" data-panel="browse">
         <div class="mega-nav-panel-inner">
         <div class="mega-list">
-          <h3 class="mega-list-title">Browse Obituaries By</h3>
+          <p class="mega-list-title">Browse Obituaries By</p>
           <ul>
             <li><a href="#">Celebrities and Notable Deaths</a></li>
             <li><a href="#">Charities and Social Causes</a></li>
@@ -779,7 +783,7 @@
       <div class="mega-nav-panel" data-panel="planning">
         <div class="mega-nav-panel-inner">
         <div class="mega-list">
-          <h3 class="mega-list-title">When Someone Has Died</h3>
+          <p class="mega-list-title">When Someone Has Died</p>
           <ul>
             <li><a href="#">What To Do First</a></li>
             <li><a href="#">Find a Funeral Home or Cremation Service</a></li>
@@ -788,7 +792,7 @@
           </ul>
         </div>
         <div class="mega-list">
-          <h3 class="mega-list-title">Plan Ahead</h3>
+          <p class="mega-list-title">Plan Ahead</p>
           <ul>
             <li><a href="#">Estate Planning Guide</a></li>
             <li><a href="#">Pre-plan a Funeral</a></li>
@@ -812,7 +816,7 @@
       <div class="mega-nav-panel" data-panel="support">
         <div class="mega-nav-panel-inner">
         <div class="mega-list">
-          <h3 class="mega-list-title">Grief Support</h3>
+          <p class="mega-list-title">Grief Support</p>
           <ul>
             <li><a href="#">Help with Grief &amp; Loss</a></li>
             <li><a href="#">How to Cope with Grief</a></li>
@@ -820,7 +824,7 @@
           </ul>
         </div>
         <div class="mega-list">
-          <h3 class="mega-list-title">Sympathy &amp; Honoring</h3>
+          <p class="mega-list-title">Sympathy &amp; Honoring</p>
           <ul>
             <li><a href="#">Poems of Mourning</a></li>
             <li><a href="#">Honoring a Life</a></li>
@@ -828,7 +832,7 @@
           </ul>
         </div>
         <div class="mega-list">
-          <h3 class="mega-list-title">Customer Support</h3>
+          <p class="mega-list-title">Customer Support</p>
           <ul>
             <li><a href="#">FAQ</a></li>
             <li><a href="#">Chat With Us</a></li>
@@ -846,7 +850,7 @@
 
   <!-- ════════════════════════════════════ MOBILE MENU ════════════════════════════════════ -->
   <div class="mobile-overlay" id="mobileOverlay"></div>
-  <div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu" aria-hidden="true">
     <div class="mobile-menu-header">
       <a href="#" class="logo-link"><img src="https://www.legacy.com/media/legacy-icon.svg" alt="Legacy.com" style="height:28px" /></a>
       <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&times;</button>
@@ -856,7 +860,7 @@
     </div>
     <div class="mobile-menu-footer">
       <button class="mobile-send-gifts">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
         Send Gifts
       </button>
     </div>
@@ -864,6 +868,7 @@
 
   <!-- ════════════════════════════════ PAGE WIREFRAME ════════════════════════════════ -->
   <main class="page-content">
+    <h1 class="sr-only">Legacy.com Navigation Prototype</h1>
     <div class="wireframe-block wireframe-hero">Hero Section</div>
     <div class="wireframe-content">
       <div class="wireframe-row">
@@ -1005,13 +1010,17 @@
       if (activePanel === panelId) return;
       // Close current
       megaPanels.forEach(p => p.classList.remove('visible'));
-      navItems.forEach(n => n.classList.remove('active'));
+      navItems.forEach(n => {
+        n.classList.remove('active');
+        if (n.dataset.panel) n.setAttribute('aria-expanded', 'false');
+      });
       // Open new
       const panel = document.querySelector(`.mega-nav-panel[data-panel="${panelId}"]`);
       const navItem = document.querySelector(`.nav-item[data-panel="${panelId}"]`);
       if (panel && navItem) {
         panel.classList.add('visible');
         navItem.classList.add('active');
+        navItem.setAttribute('aria-expanded', 'true');
         megaOverlay.classList.add('visible');
         activePanel = panelId;
       }
@@ -1019,7 +1028,10 @@
 
     function closeMegaNav() {
       megaPanels.forEach(p => p.classList.remove('visible'));
-      navItems.forEach(n => n.classList.remove('active'));
+      navItems.forEach(n => {
+        n.classList.remove('active');
+        if (n.dataset.panel) n.setAttribute('aria-expanded', 'false');
+      });
       megaOverlay.classList.remove('visible');
       activePanel = null;
     }
@@ -1080,16 +1092,16 @@
       keys.forEach(key => {
         const data = subPanelData[key];
         html += `<div class="accordion-item" data-key="${key}">`;
-        html += `<button class="accordion-trigger" type="button">
+        html += `<button class="accordion-trigger" type="button" aria-expanded="false">
           ${data.title}
-          <svg class="caret" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="caret" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </button>`;
         html += '<div class="accordion-content"><div class="accordion-inner">';
 
         data.sections.forEach(section => {
           html += '<div class="mobile-sub-section">';
           if (section.title) {
-            html += `<h3 class="mobile-sub-section-title">${section.title}</h3>`;
+            html += `<p class="mobile-sub-section-title">${section.title}</p>`;
           }
           html += '<ul class="mobile-sub-list">';
           section.items.forEach(item => {
@@ -1129,10 +1141,14 @@
           const wasOpen = item.classList.contains('open');
           // Close all others
           const hadOpen = !!mobileAccordion.querySelector('.accordion-item.open');
-          mobileAccordion.querySelectorAll('.accordion-item.open').forEach(i => i.classList.remove('open'));
+          mobileAccordion.querySelectorAll('.accordion-item.open').forEach(i => {
+            i.classList.remove('open');
+            i.querySelector('.accordion-trigger').setAttribute('aria-expanded', 'false');
+          });
           // Toggle clicked
           if (!wasOpen) {
             item.classList.add('open');
+            trigger.setAttribute('aria-expanded', 'true');
             // Wait for collapse to settle, then scroll
             if (hadOpen) {
               let lastTop = trigger.getBoundingClientRect().top;
@@ -1164,21 +1180,55 @@
       mobileMenu.classList.add('open');
       mobileOverlay.classList.add('visible');
       document.body.style.overflow = 'hidden';
+      mobileMenu.setAttribute('aria-hidden', 'false');
+      hamburgerBtn.setAttribute('aria-expanded', 'true');
+      hamburgerBtn.setAttribute('aria-label', 'Close menu');
+      setTimeout(() => { mobileMenuClose.focus(); }, 300);
     }
 
     function closeMobileMenu() {
       mobileMenu.classList.remove('open');
       mobileOverlay.classList.remove('visible');
       document.body.style.overflow = '';
+      mobileMenu.setAttribute('aria-hidden', 'true');
+      hamburgerBtn.setAttribute('aria-expanded', 'false');
+      hamburgerBtn.setAttribute('aria-label', 'Open menu');
+      hamburgerBtn.focus();
       // Collapse all accordions after transition
       setTimeout(() => {
-        mobileAccordion.querySelectorAll('.accordion-item.open').forEach(i => i.classList.remove('open'));
+        mobileAccordion.querySelectorAll('.accordion-item.open').forEach(i => {
+          i.classList.remove('open');
+          const trigger = i.querySelector('.accordion-trigger');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
       }, 300);
     }
 
     hamburgerBtn.addEventListener('click', openMobileMenu);
     mobileMenuClose.addEventListener('click', closeMobileMenu);
     mobileOverlay.addEventListener('click', closeMobileMenu);
+
+    // ── Focus Trap for Mobile Menu ──
+    mobileMenu.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      const focusableEls = mobileMenu.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableEls.length === 0) return;
+      const firstEl = focusableEls[0];
+      const lastEl = focusableEls[focusableEls.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
+    });
   </script>
 </body>
 </html>
