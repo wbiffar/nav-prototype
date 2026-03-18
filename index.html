@@ -65,6 +65,8 @@
       gap: 24px;
       max-width: 1440px;
       margin: 0 auto;
+      position: relative;
+      z-index: 2;
     }
     .logo-link {
       display: flex;
@@ -139,6 +141,9 @@
       padding: 0 64px;
       max-width: 1440px;
       margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      background: var(--surface-card);
     }
     .nav-item {
       position: relative;
@@ -173,10 +178,11 @@
     /* ── Mega Nav Panel ── */
     .mega-nav-wrapper {
       position: absolute;
-      top: 100%;
+      top: calc(100% + 1px);
       left: 0;
       width: 100%;
-      z-index: 99;
+      z-index: 1;
+      clip-path: inset(0 -50px -50px -50px);
     }
     .mega-nav-panel {
       background: var(--white);
