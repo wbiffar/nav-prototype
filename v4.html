@@ -541,20 +541,13 @@
       padding: 8px 0 24px 0;
     }
 
+    .mobile-send-gifts-wrap {
+      padding: 24px 16px 16px;
+    }
     .mobile-auth-btns {
       display: flex;
       gap: 12px;
-      padding: 24px 16px 16px;
-      position: relative;
-    }
-    .mobile-auth-btns::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 16px;
-      right: 16px;
-      height: 1px;
-      background: var(--border-default);
+      padding: 0;
     }
     .mobile-auth-btn {
       flex: 1;
@@ -883,10 +876,13 @@
       <!-- Accordion items populated by JS -->
     </div>
     <div class="mobile-menu-footer">
-      <button class="mobile-send-gifts">
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-        Send Gifts
-      </button>
+      <div class="mobile-auth-btns">
+        <button class="mobile-auth-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Sign In
+        </button>
+        <button class="mobile-auth-btn">Create Account</button>
+      </div>
     </div>
   </div>
 
@@ -1146,14 +1142,13 @@
         html += '</div></div></div>';
       });
 
-      // Auth buttons
-      html += `<div class="mobile-auth-btns">
-        <button class="mobile-auth-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Sign In
-        </button>
-        <button class="mobile-auth-btn">Create Account</button>
-      </div>`;
+      // Send Gifts button
+      html += `<div class="mobile-send-gifts-wrap">
+      <button class="mobile-send-gifts">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        Send Gifts
+      </button>
+    </div>`;
 
       mobileAccordion.innerHTML = html;
 
